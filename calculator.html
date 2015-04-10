@@ -1,0 +1,227 @@
+<!--Mission: Make a simple 4-function calculator-->
+<!DOCTYPE html>
+<html>
+<head>
+<title>Calculator</title>
+<script type="text/javascript">
+//Globals
+var sign = '';
+var calculation = '';
+var previousTotal = 0;
+var isTotal = true;
+
+//Clears the coloration from the function buttons and resets isTotal.
+function clearButtons() {
+    var q = ['plus', 'minus', 'times', 'divide'];
+    for (var i = 0; i < 4; i++) {
+        document.getElementById(q[i]).style.background = "#66AACC";
+        document.getElementById(q[i]).style.color = "black";
+    }
+    isTotal = true;
+    document.getElementById("results").scrollTop = document.getElementById("results").scrollHeight;
+}
+
+//Gets the currently selected sign and performs tasks to enable calculatons
+function getSign(currentSign, id) {
+    //Assigns sign to global
+    sign = currentSign;
+    //Sets isTotal to false
+    if (isTotal) {
+        isTotal = false;
+    }
+    //Adds whatever is in the value box to the total calculation string.
+    calculation = calculation + document.getElementById("value").value + " " + sign + " ";
+    //and to the results panel.
+    document.getElementById("results").innerHTML = document.getElementById("results").innerHTML + document.getElementById("value").value + " " + sign + " ";
+    //Clears the buttons
+    clearButtons();
+    //Colors the sign button
+    document.getElementById(id).style.background = "blue";
+    document.getElementById(id).style.color = "white";
+
+}
+
+//Inserts a number into the value box
+function addNum(num) {
+    //Sets isTotal to false and clears the value box, first.
+    if (isTotal) {
+        document.getElementById("value").value = '';
+        isTotal = false;
+    }
+    //Adds value to value box
+    var t = document.getElementById("value").value;
+    document.getElementById("value").value = t + num.toString();
+}
+
+//Clears previous values and resets calculator
+function clr() {
+    //previousTotal to 0
+    previousTotal = 0;
+    //Value box to 0
+    document.getElementById("value").value = 0;
+    //Calculation string is blank
+    calculation = '';
+    //Record that we did that.
+    document.getElementById("results").innerHTML = document.getElementById("results").innerHTML + "CLR<br>";
+    //Clear any buttons
+    clearButtons();
+}
+
+//performs calculation
+function calculate() {
+    //Add final value to calculation and results
+    calculation = calculation + document.getElementById("value").value + " = ";
+    document.getElementById("results").innerHTML = document.getElementById("results").innerHTML + document.getElementById("value").value + " = ";
+
+    //Clear all buttons
+    clearButtons();
+
+    //Parse the string
+    var units = calculation.split(" ");
+
+    //We'll need these for the calculations
+    var total = 0;
+    var a = 0;
+
+    //Do the math, storing the value as we go in total.
+    for (var i = 0; i < units.length; i++) {
+        //If there's an =, just stop.
+        if (units[i] == "=") {
+            break;
+        }
+
+        //"try" for error checking
+        try {
+            //Do you even number?
+            var aNumber = Number(units[i])
+            if (isNaN(units[i])) {
+                if (units[i] == '+') {
+                    total += Number(units[i + 1]);
+                } else if (units[i] == '-') {
+                    total -= Number(units[i + 1]);
+                } else if (units[i] == '*') {
+                    total *= Number(units[i + 1]);
+                } else if (units[i] == '/') {
+                    total /= Number(units[i + 1]);
+                } else {
+                    alert(units[i]);
+                }
+            } else {
+                if (total == 0) {
+                    total = aNumber;
+                }
+            }
+        }
+        //fail.
+        catch (err) {
+            alert(err.toString());
+        }
+    }
+
+    //Print the results
+    document.getElementById("results").innerHTML = document.getElementById("results").innerHTML + total.toString() + "<br>"
+    //Show them on the calculator display
+    document.getElementById("value").value = previousTotal = total;
+
+    //Reset the calculator.
+    clearButtons();
+    calculation = '';
+
+}
+</script>
+<style>
+#calcMain {
+    border: 3px outset;
+    border-radius: 25px;
+    height: 175px;
+    width: 150px;
+    text-align: center;
+    background-color: #224488;
+    position: relative;
+    float: left;
+}
+#calcButtons {
+    position: relative;
+    margin: auto;
+    top: 10px;
+    left:8px;
+    right: 0;
+}
+.inputField {
+    width: 100px;
+    top: 5px;
+    position: relative;
+    background-color: #DDDDDD;
+    text-align: right;
+    font-size: 12pt;
+    font-family: impact;
+}
+.buttonCol {
+    display: block;
+    float: left;
+    width: 35px;
+    position: relative;
+    margin: auto;
+}
+.cbuttons {
+    border-radius: 15px;
+    height: 30px;
+    width: 30px;
+    background-color: #66AACC;
+    text-align: left;
+    font-size: 12pt;
+    padding: 3px;
+    padding-left: 5px;
+    position: relative;
+    margin-top: 3px;
+}
+.calculator {
+    text-align: left;
+    position: relative;
+}
+#results {
+    border: 2px ridge;
+    width: 300px;
+    height: 170px;
+    overflow: auto;
+    float: left;
+    position: relative;
+    left: 20px;
+    visibility: hidden;
+}
+</style>
+</head>
+<body>
+<div class="calculator" id="calcMain">
+    <input type="text" id="value" class="inputField" value="0" />
+    <div id="calcButtons" class="calculator">
+        <div class="buttonCol">
+            <button id="one" onclick="addNum(1);" class="cbuttons">1</button>
+            <button id="four" onclick="addNum(4);" class="cbuttons">4</button>
+            <button id="seven" onclick="addNum(7);" class="cbuttons">7</button>
+            <button id="zero" onclick="addNum(0);" class="cbuttons">0</button>
+        </div>
+        <div class="buttonCol">
+            <button id="two" onclick="addNum(2);" class="cbuttons">2</button>
+            <button id="five" onclick="addNum(5);" class="cbuttons">5</button>
+            <button id="eight" onclick="addNum(8);" class="cbuttons">8</button>
+            <button id="times" onclick="getSign('*', 'times');" class="cbuttons">x</button>
+        </div>
+        <div class="buttonCol">
+            <button id="three" onclick="addNum(3);" class="cbuttons">3</button>
+            <button id="six" onclick="addNum(6);" class="cbuttons">6</button>
+            <button id="nine" onclick="addNum(9);" class="cbuttons">9</button>
+            <button id="divide" onclick="getSign('/', 'divide');" class="cbuttons">/</button>
+        </div>
+        <div class="buttonCol">
+            <button id="CLR" onclick="clr()" class="cbuttons">C</button>
+            <button id="plus" onclick="getSign('+', 'plus');" class="cbuttons">+</button>
+            <button id="minus" onclick="getSign('-', 'minus');" class="cbuttons">-</button>
+            <button id="calculate" onclick="calculate();" class="cbuttons">=</button>
+        </div>
+    </div>
+</div>
+<div id="results">
+    <p>Results:</p>
+</div>
+</body>
